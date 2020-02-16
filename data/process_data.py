@@ -45,10 +45,21 @@ def main():
     """Main script program"""
 
     # Configure the argument parser
-    parser  = argparse.ArgumentParser(description="Disaster response ETL pipeline")
-    parser.add_argument("messages_filepath", help="File path to the messages data set (CSV)")
-    parser.add_argument("categories_filepath", help="File path to the categories data set (CSV)")
-    parser.add_argument("database_filepath", help="File path to the database for storage")
+    parser  = argparse.ArgumentParser(
+        description="Disaster response ETL pipeline"
+    )
+    parser.add_argument(
+        "messages_filepath", 
+        help="File path to the messages data set (CSV)"
+    )
+    parser.add_argument(
+        "categories_filepath", 
+        help="File path to the categories data set (CSV)"
+    )
+    parser.add_argument(
+        "database_filepath", 
+        help="File path to the database for storage"
+    )
 
     # Parse the arguments
     args = parser.parse_args()

@@ -9,7 +9,7 @@ def load_data(messages_filepath, categories_filepath):
     df_messages = pandas.read_csv(messages_filepath)
     df_categories = pandas.read_csv(categories_filepath)
     df = df_messages.join(df_categories.set_index("id"), on="id")
-    
+
     return df
 
 
@@ -27,6 +27,9 @@ def clean_data(df):
     df.drop(columns=["categories"], inplace=True)
     df = df.join(categories)
     df = df.drop_duplicates()
+
+#    print(df[df.columns.values[4:]].sum()/df.shape[0])
+    print(df[df.electricity==1].head().message.values)
 
     return df
 
@@ -60,6 +63,7 @@ def main():
 
     print('Cleaning data...')
     df = clean_data(df)
+    return
 
     print('Saving data...\n    DATABASE: {}'.format(database_filepath))
     save_data(df, database_filepath)

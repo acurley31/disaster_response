@@ -9,12 +9,13 @@ from sqlalchemy import create_engine
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.naive_bayes import MultinomialNB, ComplementNB
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, multilabel_confusion_matrix
 
 
@@ -83,8 +84,12 @@ def build_model():
     # Random forest classifier parameters
     params_randomforest = {
         "clf__estimator": [RandomForestClassifier()],
+        "clf__estimator__n_estimators": [100, 500, 2000],
         "clf__estimator__max_features": ["auto", "log2"],
-        "clf__estimator__max_depth": [None, 25, 50, 100],
+        "clf__estimator__max_depth": [None, 10, 20],
+        "clf__estimator__bootstrap": [True, False],
+        "clf__estimator__min_samples_leaf": [1, 2, 4],
+        "clf__estimator__min_samples_split": [2, 5, 10],
     }
 
     # Complement NB classifier parameters
@@ -99,13 +104,22 @@ def build_model():
         "clf__estimator__alpha": [0.1, 0.5, 1.0],
     }
 
+    # MLP classifier parameters
+    params_mlp = {
+        "clf__estimator": [MLPClassifier()],
+    }
+
 
     # Set the parameter grid
     params_randomforest.update(params_text)
+    params_complementnb.update(params_text)
+    params_multinomialnb.update(params_text)
+
     parameters = [
         params_randomforest,
 #        params_complementnb,
 #        params_multinomialnb,
+#        params_mlp,
     ]
 
     return GridSearchCV(pipeline, parameters)

@@ -28,9 +28,6 @@ def clean_data(df):
     df = df.join(categories)
     df = df.drop_duplicates()
 
-#    print(df[df.columns.values[4:]].sum()/df.shape[0])
-    print(df[df.electricity==1].head().message.values)
-
     return df
 
 

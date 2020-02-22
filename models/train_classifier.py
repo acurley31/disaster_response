@@ -12,11 +12,13 @@ from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.linear_model import SGDClassifier
+from sklearn.svm import LinearSVC
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.naive_bayes import MultinomialNB, ComplementNB
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report, multilabel_confusion_matrix
+
+from sklearn.metrics import classification_report
 
 
 # Download NLTK resources
@@ -33,11 +35,19 @@ def load_data(database_filepath):
     query = "select * from Message"
     df = pandas.read_sql(query, engine)
 
+
+
     # Split the data into the X, Y, and cateogry_names sets
     cols = ["id", "message", "original", "genre"]
-    category_names = list(filter(lambda x: x not in cols, df.columns.values))
+    category_names = list(filter(lambda x: (x not in cols) and (df[x].sum() != 0), df.columns.values))
+    
+    # Drop any fields that are not represented
     X = df.message.values
     Y = df[category_names].values
+   
+#    print(df[category_names].sum()/df.shape[0])
+#
+#    sys.exit()
 
     return X, Y, category_names
 
@@ -65,10 +75,10 @@ def build_model():
     # Configure the pipeline
     pipeline = Pipeline([
         ("text_pipeline", Pipeline([
-            ("vect", CountVectorizer()),
+            ("vect", CountVectorizer(tokenizer=tokenize)),
             ("tfidf", TfidfTransformer()),
         ])),
-       ("clf", MultiOutputClassifier(RandomForestClassifier(), n_jobs=-1))
+        ("clf", MultiOutputClassifier(LinearSVC(), n_jobs=-1))
     ])
 
     # Optimize the pipeline with grid search
@@ -79,6 +89,20 @@ def build_model():
         "text_pipeline__vect__max_features": (None, 10000, 20000),
         "text_pipeline__tfidf__use_idf": (True, False),
         "text_pipeline__tfidf__sublinear_tf": (True, False),
+    }
+
+    # SGD classifier parameters
+    params_sgd = {
+        "clf__estimator": [SGDClassifier()],
+        "clf__estimator__loss": ["hinge", "log"],
+        "clf__estimator__alpha": [1e-5, 1e-4, 1e-3],
+    }
+
+    # Linear SVC classifier parameters
+    params_linearsvc = {
+        "clf__estimator": [LinearSVC()],
+        "clf__estimator__C": [1.0, 10.0, 100.0],
+        "clf__estimator__loss": ["hinge", "squared_hinge"],
     }
 
     # Random forest classifier parameters
@@ -104,22 +128,20 @@ def build_model():
         "clf__estimator__alpha": [0.1, 0.5, 1.0],
     }
 
-    # MLP classifier parameters
-    params_mlp = {
-        "clf__estimator": [MLPClassifier()],
-    }
-
 
     # Set the parameter grid
-    params_randomforest.update(params_text)
+#    params_randomforest.update(params_text)
     params_complementnb.update(params_text)
     params_multinomialnb.update(params_text)
+    params_sgd.update(params_text)
+    params_linearsvc.update(params_test)
 
     parameters = [
-        params_randomforest,
+#        params_randomforest,
+        params_sgd,
+        params_linearsvc,
 #        params_complementnb,
 #        params_multinomialnb,
-#        params_mlp,
     ]
 
     return GridSearchCV(pipeline, parameters)

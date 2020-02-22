@@ -1,0 +1,25 @@
+<div class="container">
+    
+    <form [formGroup]="form">
+        <input matInput formControlName="message" class="message-input" autocomplete="off">
+        
+        <button mat-flat-button class="classify-button" (click)="onClassify($event)">
+            Classify
+        </button>
+    </form>
+
+    <div class="container-tags" *ngIf="message && !isLoading">
+        <mat-chip-list>
+            <mat-chip 
+                *ngFor="let item of message | message" 
+                [selected]="item.value">
+                {{ item.label | titlecase }}
+            </mat-chip>
+        </mat-chip-list>
+    </div>
+
+    <div class="container-tags" *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+    </div>
+
+</div>

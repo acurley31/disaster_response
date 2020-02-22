@@ -3,6 +3,7 @@
 import os
 import sys
 
+from classifier.api.train_classifier import tokenize
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'disaster_response.settings')

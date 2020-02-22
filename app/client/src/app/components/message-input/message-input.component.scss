@@ -1,0 +1,69 @@
+@import "~@angular/material/theming";
+@include mat-core();
+
+// Define colors
+$border-color: mat-color($mat-grey, 400);
+$border-active-color: mat-color($mat-purple, 800);
+
+
+// Define common variables
+$border-radius: 8px;
+
+
+.container {
+    padding: 128px 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.message-input {
+    width: 400px;
+    height: 40px;
+    outline: none;
+    box-shadow: none;
+    padding: 4px 24px;
+
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+
+    
+    &:focus {
+        @include mat-elevation(8);
+        border: 1px solid $border-active-color;
+    }
+}
+
+.classify-button {
+    width: 96px;
+    height: 48px;
+    margin-left: 12px;
+
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background-color: $border-active-color;
+    color: white;
+    font-weight: 400;
+    font-size: 14px;
+    font-family: Roboto, sans-serif;
+
+    &:focus, &:hover {
+        outline: none;
+        background-color: mat-color($mat-purple, 900);
+    }
+
+}
+
+
+.container-tags {
+    width: 50%;
+    padding: 96px 0;
+    display: flex;
+    justify-content: center;
+}
+
+::ng-deep .mat-chip-list-wrapper {
+    justify-content: center;
+}

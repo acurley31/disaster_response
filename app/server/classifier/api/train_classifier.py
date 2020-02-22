@@ -22,9 +22,12 @@ from sklearn.metrics import classification_report
 
 
 # Download NLTK resources
-nltk.download("punkt")
-nltk.download("wordnet")
-nltk.download("stopwords")
+try:
+    nltk.download("punkt")
+    #nltk.download("wordnet")
+    nltk.download("stopwords")
+except:
+    pass
 
 
 def load_data(database_filepath):

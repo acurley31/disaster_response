@@ -1,14 +1,20 @@
 import pickle
 from rest_framework import serializers
 from django.contrib.staticfiles import finders
+
 from classifier.models import *
+
 
 
 def load_model(filename):
     """Load in the classifier model"""
 
-    with open(filename, "rb") as f:
-        model = pickle.load(f)
+    try:
+        with open(filename, "rb") as f:
+            model = pickle.load(f)
+    except Exception as error:
+        model = None
+        print(error)
 
     return model
 
